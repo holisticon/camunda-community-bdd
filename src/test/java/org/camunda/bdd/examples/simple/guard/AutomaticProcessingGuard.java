@@ -10,10 +10,11 @@ import org.camunda.bpm.engine.guard.ActivityGuard;
  */
 public class AutomaticProcessingGuard extends ActivityGuard {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  @Override
-  public void checkPostconditions(final DelegateExecution execution) throws IllegalStateException {
-    checkIsSet(execution, Variables.IS_AUTOMATIC);
-  }
+    @Override
+    public void checkPostconditions(final DelegateExecution execution) throws IllegalStateException {
+        checkIsSet(execution, Variables.IS_AUTOMATIC);
+        checkIsSet(execution, Variables.CONTRACT_ID);
+    }
 }
