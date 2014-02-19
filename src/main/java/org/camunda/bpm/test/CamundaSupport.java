@@ -14,13 +14,12 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.fluent.FluentProcessInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
-import org.camunda.bpm.engine.impl.test.TestHelper;
 import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.test.cfg.MostUsefulProcessEngineConfiguration;
 import org.camunda.bpm.engine.test.fluent.FluentProcessEngineTests;
 import org.camunda.bpm.engine.test.mock.Mocks;
-import org.camunda.bpm.engine.test.needle.supplier.CamundaInstancesSupplier;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ public class CamundaSupport {
      * Private constructor to avoid direct instantiation.
      */
     private CamundaSupport() {
-        this.processEngine = TestHelper.getProcessEngine(CamundaInstancesSupplier.CAMUNDA_CONFIG_RESOURCE);
+        this.processEngine = MostUsefulProcessEngineConfiguration.mostUsefulProcessEngineConfiguration().buildProcessEngine();
     }
 
     /**

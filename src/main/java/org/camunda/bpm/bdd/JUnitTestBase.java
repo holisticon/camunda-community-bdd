@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
+import org.camunda.bdd.test.Slf4jLoggerRule;
 import org.camunda.bpm.test.CamundaSupportInjectionProvider;
 import org.jbehave.core.configuration.Configuration;
 import org.jbehave.core.configuration.MostUsefulConfiguration;
@@ -26,6 +27,10 @@ import de.codecentric.jbehave.junit.monitoring.JUnitReportingRunner;
 
 @RunWith(JUnitReportingRunner.class)
 public abstract class JUnitTestBase extends JUnitStories {
+  
+  static {
+    Slf4jLoggerRule.DEFAULT.before();
+  }
 
   @Override
   public Configuration configuration() {

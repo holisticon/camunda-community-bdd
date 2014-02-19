@@ -151,7 +151,7 @@ public class SimpleUnitTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("without error on process automtically, this test fails")
     @Deployment(resources = SimpleProcessConstants.BPMN)
     public void shouldStartProcessAutomaticallyAndWaitForManual() {
 
