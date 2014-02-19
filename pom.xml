@@ -8,13 +8,13 @@
     <parent>
         <groupId>org.camunda.bpm.incubation</groupId>
         <artifactId>camunda-bpm-testing</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.6</version>
     </parent>
 
     <packaging>jar</packaging>
 
     <properties>
-        <jbehave.version>3.9-SNAPSHOT</jbehave.version>
+        <jbehave.version>3.9</jbehave.version>
         <jbehave-junit-runner.version>1.0.2-SNAPSHOT</jbehave-junit-runner.version>
     </properties>
 
@@ -30,6 +30,7 @@
         <dependency>
             <groupId>org.camunda.bpm.incubation</groupId>
             <artifactId>camunda-bpm-data</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.camunda.bpm</groupId>
@@ -39,7 +40,7 @@
             <groupId>org.camunda.bpm.incubation</groupId>
             <artifactId>camunda-bpm-fest-assertions</artifactId>
         </dependency>
-
+        
         <dependency>
             <groupId>org.jbehave</groupId>
             <artifactId>jbehave-needle</artifactId>
@@ -52,6 +53,11 @@
             <version>${jbehave-junit-runner.version}</version>
         </dependency>
 
+        <dependency>
+        	<groupId>org.slf4j</groupId>
+        	<artifactId>jul-to-slf4j</artifactId>
+        	<version>1.7.2</version>
+        </dependency>
     </dependencies>
 
     <repositories>
