@@ -4,23 +4,23 @@
     <bpmn2:participant id="simple_process" name="contract processing" processRef="simple-process"/>
   </bpmn2:collaboration>
   <bpmn2:process id="simple-process" name="simple-process" isExecutable="true">
-    <bpmn2:startEvent id="StartEvent_1">
-      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+    <bpmn2:startEvent id="start_process" name="Contract received">
+      <bpmn2:outgoing>flow_start_load</bpmn2:outgoing>
     </bpmn2:startEvent>
     <bpmn2:endEvent id="event_contract_processed" name="Contract processed">
-      <bpmn2:incoming>SequenceFlow_5</bpmn2:incoming>
+      <bpmn2:incoming>flow_contract_processed</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="StartEvent_1" targetRef="service_load_contract_data"/>
+    <bpmn2:sequenceFlow id="flow_start_load" name="" sourceRef="start_process" targetRef="service_load_contract_data"/>
     <bpmn2:serviceTask id="service_load_contract_data" camunda:expression="#{simpleProcessAdapter.loadContractData(execution)}" camunda:resultVariable="isAutomaticProcessing" name="Load&#xA;contract&#xA;data">
       <bpmn2:extensionElements>
         <camunda:executionListener class="org.camunda.bdd.examples.simple.guard.AutomaticProcessingGuard" event="end"/>
       </bpmn2:extensionElements>
-      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
-      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+      <bpmn2:incoming>flow_start_load</bpmn2:incoming>
+      <bpmn2:outgoing>flow_load_possible</bpmn2:outgoing>
     </bpmn2:serviceTask>
-    <bpmn2:sequenceFlow id="SequenceFlow_2" name="" sourceRef="service_load_contract_data" targetRef="exclusive_is_processing_automatically"/>
+    <bpmn2:sequenceFlow id="flow_load_possible" name="" sourceRef="service_load_contract_data" targetRef="exclusive_is_processing_automatically"/>
     <bpmn2:exclusiveGateway id="exclusive_is_processing_automatically" name="Automatic&#xD;&#xA;processing&#xD;&#xA;possible?" default="flow_automatic_processing_no">
-      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:incoming>flow_load_possible</bpmn2:incoming>
       <bpmn2:outgoing>flow_automatic_processing_yes</bpmn2:outgoing>
       <bpmn2:outgoing>flow_automatic_processing_no</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
@@ -29,39 +29,39 @@
     </bpmn2:sequenceFlow>
     <bpmn2:serviceTask id="service_process_contract_automatically" camunda:expression="#{simpleProcessAdapter.processContract()}" name="Process&#xD;&#xA;contract&#xD;&#xA;automatically">
       <bpmn2:incoming>flow_automatic_processing_yes</bpmn2:incoming>
-      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+      <bpmn2:outgoing>flow_automatic_succeeds</bpmn2:outgoing>
     </bpmn2:serviceTask>
-    <bpmn2:sequenceFlow id="SequenceFlow_4" name="" sourceRef="service_process_contract_automatically" targetRef="ExclusiveGateway_2"/>
+    <bpmn2:sequenceFlow id="flow_automatic_succeeds" name="" sourceRef="service_process_contract_automatically" targetRef="ExclusiveGateway_2"/>
     <bpmn2:exclusiveGateway id="ExclusiveGateway_2">
-      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:incoming>flow_automatic_succeeds</bpmn2:incoming>
       <bpmn2:incoming>flow_is_processed_yes</bpmn2:incoming>
-      <bpmn2:outgoing>SequenceFlow_5</bpmn2:outgoing>
+      <bpmn2:outgoing>flow_contract_processed</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
-    <bpmn2:sequenceFlow id="SequenceFlow_5" name="" sourceRef="ExclusiveGateway_2" targetRef="event_contract_processed"/>
+    <bpmn2:sequenceFlow id="flow_contract_processed" name="" sourceRef="ExclusiveGateway_2" targetRef="event_contract_processed"/>
     <bpmn2:userTask id="task_process_contract_manually" camunda:formKey="processContractManually.xhtml" name="Process&#xD;&#xA;contract&#xD;&#xA;manually">
       <bpmn2:incoming>flow_automatic_processing_no</bpmn2:incoming>
       <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
-      <bpmn2:outgoing>SequenceFlow_7</bpmn2:outgoing>
+      <bpmn2:outgoing>flow_manually_is_processed</bpmn2:outgoing>
     </bpmn2:userTask>
     <bpmn2:sequenceFlow id="flow_automatic_processing_no" name="no" sourceRef="exclusive_is_processing_automatically" targetRef="task_process_contract_manually"/>
     <bpmn2:exclusiveGateway id="exclusive_is_processed" name="Is processed?" default="flow_is_processed_yes">
-      <bpmn2:incoming>SequenceFlow_7</bpmn2:incoming>
+      <bpmn2:incoming>flow_manually_is_processed</bpmn2:incoming>
       <bpmn2:outgoing>flow_is_processed_yes</bpmn2:outgoing>
       <bpmn2:outgoing>flow_is_processed_no</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
-    <bpmn2:sequenceFlow id="SequenceFlow_7" name="" sourceRef="task_process_contract_manually" targetRef="exclusive_is_processed"/>
+    <bpmn2:sequenceFlow id="flow_manually_is_processed" name="" sourceRef="task_process_contract_manually" targetRef="exclusive_is_processed"/>
     <bpmn2:sequenceFlow id="flow_is_processed_yes" name="yes" sourceRef="exclusive_is_processed" targetRef="ExclusiveGateway_2"/>
     <bpmn2:serviceTask id="service_cancel_contract_processing" camunda:expression="#{simpleProcessAdapter.cancelProcessing()}" name="Cancel&#xD;&#xA;contract&#xD;&#xA;processing">
       <bpmn2:incoming>flow_is_processed_no</bpmn2:incoming>
-      <bpmn2:outgoing>SequenceFlow_10</bpmn2:outgoing>
+      <bpmn2:outgoing>flow_contract_cancelled</bpmn2:outgoing>
     </bpmn2:serviceTask>
     <bpmn2:sequenceFlow id="flow_is_processed_no" name="no" sourceRef="exclusive_is_processed" targetRef="service_cancel_contract_processing">
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">#{processingErrorsPresent}</bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
-    <bpmn2:endEvent id="event_processing_cancelled" name="Processing cancelled">
-      <bpmn2:incoming>SequenceFlow_10</bpmn2:incoming>
+    <bpmn2:endEvent id="event_processing_cancelled" name="Contract cancelled">
+      <bpmn2:incoming>flow_contract_cancelled</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:sequenceFlow id="SequenceFlow_10" name="" sourceRef="service_cancel_contract_processing" targetRef="event_processing_cancelled"/>
+    <bpmn2:sequenceFlow id="flow_contract_cancelled" name="" sourceRef="service_cancel_contract_processing" targetRef="event_processing_cancelled"/>
     <bpmn2:boundaryEvent id="BoundaryEvent_1" name="" attachedToRef="service_process_contract_automatically">
       <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
       <bpmn2:errorEventDefinition id="ErrorEventDefinition_1" errorRef="Error_1"/>
@@ -74,7 +74,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_Participant_3" bpmnElement="simple_process" isHorizontal="true">
         <dc:Bounds height="385.0" width="1009.0" x="12.0" y="12.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_5" bpmnElement="StartEvent_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_5" bpmnElement="start_process">
         <dc:Bounds height="36.0" width="36.0" x="65.0" y="93.0"/>
         <bpmndi:BPMNLabel>
           <dc:Bounds height="0.0" width="0.0" x="83.0" y="134.0"/>
@@ -86,7 +86,7 @@
           <dc:Bounds height="17.0" width="96.0" x="882.0" y="134.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_StartEvent_5" targetElement="_BPMNShape_ServiceTask_7">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="flow_start_load" sourceElement="_BPMNShape_StartEvent_5" targetElement="_BPMNShape_ServiceTask_7">
         <di:waypoint xsi:type="dc:Point" x="101.0" y="111.0"/>
         <di:waypoint xsi:type="dc:Point" x="144.0" y="111.0"/>
         <bpmndi:BPMNLabel>
@@ -96,7 +96,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_7" bpmnElement="service_load_contract_data">
         <dc:Bounds height="80.0" width="100.0" x="144.0" y="71.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_7" targetElement="_BPMNShape_ExclusiveGateway_6">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="flow_load_possible" sourceElement="_BPMNShape_ServiceTask_7" targetElement="_BPMNShape_ExclusiveGateway_6">
         <di:waypoint xsi:type="dc:Point" x="244.0" y="111.0"/>
         <di:waypoint xsi:type="dc:Point" x="281.0" y="111.0"/>
         <bpmndi:BPMNLabel>
@@ -119,7 +119,7 @@
       <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_8" bpmnElement="service_process_contract_automatically">
         <dc:Bounds height="80.0" width="100.0" x="408.0" y="72.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ServiceTask_8" targetElement="_BPMNShape_ExclusiveGateway_7">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="flow_automatic_succeeds" sourceElement="_BPMNShape_ServiceTask_8" targetElement="_BPMNShape_ExclusiveGateway_7">
         <di:waypoint xsi:type="dc:Point" x="508.0" y="112.0"/>
         <di:waypoint xsi:type="dc:Point" x="587.0" y="111.0"/>
         <bpmndi:BPMNLabel>
@@ -132,7 +132,7 @@
           <dc:Bounds height="0.0" width="0.0" x="612.0" y="141.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="SequenceFlow_5" sourceElement="_BPMNShape_ExclusiveGateway_7" targetElement="_BPMNShape_EndEvent_8">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="flow_contract_processed" sourceElement="_BPMNShape_ExclusiveGateway_7" targetElement="_BPMNShape_EndEvent_8">
         <di:waypoint xsi:type="dc:Point" x="637.0" y="111.0"/>
         <di:waypoint xsi:type="dc:Point" x="912.0" y="111.0"/>
         <bpmndi:BPMNLabel>
@@ -156,7 +156,7 @@
           <dc:Bounds height="17.0" width="71.0" x="577.0" y="333.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="SequenceFlow_7" sourceElement="_BPMNShape_UserTask_5" targetElement="_BPMNShape_ExclusiveGateway_8">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_7" bpmnElement="flow_manually_is_processed" sourceElement="_BPMNShape_UserTask_5" targetElement="_BPMNShape_ExclusiveGateway_8">
         <di:waypoint xsi:type="dc:Point" x="508.0" y="304.0"/>
         <di:waypoint xsi:type="dc:Point" x="587.0" y="303.0"/>
         <bpmndi:BPMNLabel>
@@ -186,7 +186,7 @@
           <dc:Bounds height="17.0" width="104.0" x="878.0" y="326.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="SequenceFlow_10" sourceElement="_BPMNShape_ServiceTask_9" targetElement="_BPMNShape_EndEvent_9">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_10" bpmnElement="flow_contract_cancelled" sourceElement="_BPMNShape_ServiceTask_9" targetElement="_BPMNShape_EndEvent_9">
         <di:waypoint xsi:type="dc:Point" x="787.0" y="303.0"/>
         <di:waypoint xsi:type="dc:Point" x="912.0" y="303.0"/>
         <bpmndi:BPMNLabel>
