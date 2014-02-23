@@ -40,7 +40,7 @@
     <bpmn2:sequenceFlow id="flow_contract_processed" name="" sourceRef="ExclusiveGateway_2" targetRef="event_contract_processed"/>
     <bpmn2:userTask id="task_process_contract_manually" camunda:formKey="processContractManually.xhtml" name="Process&#xD;&#xA;contract&#xD;&#xA;manually">
       <bpmn2:incoming>flow_automatic_processing_no</bpmn2:incoming>
-      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+      <bpmn2:incoming>flow_error_processing</bpmn2:incoming>
       <bpmn2:outgoing>flow_manually_is_processed</bpmn2:outgoing>
     </bpmn2:userTask>
     <bpmn2:sequenceFlow id="flow_automatic_processing_no" name="no" sourceRef="exclusive_is_processing_automatically" targetRef="task_process_contract_manually"/>
@@ -62,11 +62,11 @@
       <bpmn2:incoming>flow_contract_cancelled</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:sequenceFlow id="flow_contract_cancelled" name="" sourceRef="service_cancel_contract_processing" targetRef="event_processing_cancelled"/>
-    <bpmn2:boundaryEvent id="BoundaryEvent_1" name="" attachedToRef="service_process_contract_automatically">
-      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+    <bpmn2:boundaryEvent id="event_error_processing" name="" attachedToRef="service_process_contract_automatically">
+      <bpmn2:outgoing>flow_error_processing</bpmn2:outgoing>
       <bpmn2:errorEventDefinition id="ErrorEventDefinition_1" errorRef="Error_1"/>
     </bpmn2:boundaryEvent>
-    <bpmn2:sequenceFlow id="SequenceFlow_3" name="" sourceRef="BoundaryEvent_1" targetRef="task_process_contract_manually"/>
+    <bpmn2:sequenceFlow id="flow_error_processing" name="" sourceRef="event_error_processing" targetRef="task_process_contract_manually"/>
   </bpmn2:process>
   <bpmn2:error id="Error_1" errorCode="errorProcessAutomaticallyFailed" name="AutomaticProcessingFails"/>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -193,10 +193,10 @@
           <dc:Bounds height="6.0" width="6.0" x="809.0" y="303.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_7" bpmnElement="BoundaryEvent_1">
+      <bpmndi:BPMNShape id="_BPMNShape_BoundaryEvent_7" bpmnElement="event_error_processing">
         <dc:Bounds height="36.0" width="36.0" x="456.0" y="134.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_BoundaryEvent_7" targetElement="_BPMNShape_UserTask_5">
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_11" bpmnElement="flow_error_processing" sourceElement="_BPMNShape_BoundaryEvent_7" targetElement="_BPMNShape_UserTask_5">
         <di:waypoint xsi:type="dc:Point" x="474.0" y="170.0"/>
         <di:waypoint xsi:type="dc:Point" x="474.0" y="217.0"/>
         <di:waypoint xsi:type="dc:Point" x="458.0" y="217.0"/>
