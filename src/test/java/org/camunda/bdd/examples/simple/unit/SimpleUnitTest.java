@@ -37,6 +37,7 @@ import org.mockito.stubbing.Answer;
  * 
  * @author Simon Zambrovski, Holisticon AG.
  */
+@Ignore
 public class SimpleUnitTest {
 
   static {
